@@ -1,41 +1,60 @@
-class User {
-    constructor(nombre,apellido,libros = "ninguno" ,mascotas = "ninguna"){
-        this.nombre = nombre
-        this.apellido = apellido
-        this.libros = [libros]
-        this.mascotas = [mascotas]
+const fs = require('fs')
+
+function contenedor(file) {
+    const array = []
+    try {
+        const data = fs.readFileSync(file, 'utf-8')
+        if(data != ""){
+            jsonData = JSON.parse(data)
+            array.push(jsonData)
+        } else{
+            console.log("vacio")
+        }
+    }
+    catch(error){
+        console.log(error)
+    }
+    
+    function save(nombre, price, thubmnail) {
+        try {
+            let newid = array.length + 1
+            array.push({ title: nombre, price: price, thumbnail: thubmnail, id : newid})
+            data = JSON.stringify(array)
+            fs.writeFileSync(file , data)
+        }
+        catch (error) {
+            console.log(error)
+        }
+
+    }
+    function getById(id){
+        const object = array.find(obj => obj.id === id);
+        console.log("Get By Id")
+        console.log(object)
     }
 
-    getFullName(){
-        return 'El nombre Completo es: ' + this.nombre + ' ' + this.apellido
+    function getAll(){
+        console.log("getAll")
+        console.log(array)
     }
 
-    addMascota(NombreMascota){
-        return this.mascotas.push(NombreMascota)
+    function deleteById(id){
+        const object = array.find(obj => obj.id === id);
+        array.splice(object, 1)
+        console.log("delete By Id")
+        console.log(array)
+    }
+        
+    function deleteAll(){
+        fs.writeFileSync(file, "")
+        console.log("Se borro la informacion del archivo")
     }
 
-    countMascotas(){
-        return this.mascotas.length
-    }
-
-    addBook(Nombre, Autor){
-        return this.libros.push({ Nombre,Autor})
-    }
-
-    GetBookNames(){
-        return this.libros.map(book => {
-            return book.nombre
-        })
-    }
-
+    save("jose",200,"google.com")
+    getById(1)
+    getAll()
+    deleteById(1)
+    deleteAll()
 }
 
-const usuario = new User("Martin", "martinez","harry potter","pez")
-const usuarioFullName = usuario.getFullName()
-const agregarMascota = usuario.addMascota("perro")
-const contarMascotas = usuario.countMascotas()
-const agregarLibro = usuario.addBook("harry potter 2", "jk")
-const listaDeLibros = usuario.GetBookNames()
-
-console.log(usuario)
-console.log(usuarioFullName)
+contenedor('productos.txt')
