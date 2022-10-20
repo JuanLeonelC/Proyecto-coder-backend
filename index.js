@@ -1,12 +1,12 @@
 const fs = require('fs')
 
 function contenedor(file) {
-    const array = []
+    let array = []
     try {
         const data = fs.readFileSync(file, 'utf-8')
         if(data != ""){
             jsonData = JSON.parse(data)
-            array.push(jsonData)
+            array = jsonData
         } else{
             console.log("vacio")
         }
@@ -43,6 +43,7 @@ function contenedor(file) {
         array.splice(object, 1)
         console.log("delete By Id")
         console.log(array)
+        console.log(id)
     }
         
     function deleteAll(){
@@ -53,8 +54,6 @@ function contenedor(file) {
     save("jose",200,"google.com")
     getById(1)
     getAll()
-    deleteById(1)
-    deleteAll()
 }
 
 contenedor('productos.txt')
