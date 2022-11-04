@@ -20,8 +20,12 @@
   },
   "homepage": "https://github.com/JuanLeonelC/Proyecto-coder-backend#readme",
   "dependencies": {
+    "bootstrap": "^5.2.2",
     "dotenv": "^16.0.3",
+    "ejs": "^3.1.8",
     "express": "^4.18.2",
-    "nodemon": "^2.0.20"
+    "lodash": "^4.17.21",
+    "nodemon": "^2.0.20",
+    "pug": "^3.0.2"
   }
 }
