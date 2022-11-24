@@ -1,4 +1,6 @@
 const socket = io();
+const knexConfig = require('../src/services/database/config.js');
+const knex = require('knex')(knexConfig);
 
 if(getParameterByName('username') == '' || getParameterByName('username') == null){
     window.location.replace("/login.html");
@@ -22,6 +24,13 @@ function sendNewMessage(){
 }
 
 function updateMessages(data){
+    knex('chatlogs').insert(data).then(()=> {
+        console.info('chat log saved')
+    }).catch(err =>{
+        console.error(err)
+    }).finally(() =>{
+        knex.destroy();
+    });
     let messagesToHtml = ''
     data.forEach(i => {
         messagesToHtml = messagesToHtml + `<li><b class="text-primary fs-bold">${i.username}: </b><b class="text-warning">${Date()}</b>: <i class="text-success">${i.message}</i></li>`

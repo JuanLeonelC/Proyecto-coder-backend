@@ -1,8 +1,11 @@
 const express = require('express');
 const {Server: HttpServer} = require('http');
+const { default: knex } = require('knex');
 const {Server: IoServer} = require('socket.io');
 const Productos = require('./src/services/productos.services');
 require('dotenv').config();
+
+
 
 const messages = [];
 
