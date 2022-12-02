@@ -1,1 +1,0 @@
-[{"id":1,"name":"asdasd","price":"34","thumbnail":"69","quantity":1,"time":1668720636786,"desc":"Producto agregado al carrito"}]
