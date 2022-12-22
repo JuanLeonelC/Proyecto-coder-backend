@@ -1,6 +1,4 @@
 const socket = io();
-const knexConfig = require('../src/services/database/config.js');
-const knex = require('knex')(knexConfig);
 
 if(getParameterByName('username') == '' || getParameterByName('username') == null){
     window.location.replace("/login.html");
@@ -12,33 +10,33 @@ function sendNewMessage(){
     const message = document.querySelector('#message').value;
     const username = getParameterByName('username');
     if(!message || !username){
-        alert('faltan datos');
+        alert('Flaco te faltan datos');
         return
     }
     const messageObject = {
-        username,
-        message
+        author:{
+            name: "",
+            id: socket.id,
+            lastName: '',
+            age: "",
+            username: username,
+            avatar: ""
+        },
+        text: message
     }
     socket.emit('NEW_MESSAGE_TO_SERVER', messageObject);
     document.querySelector('#message').value = '';
 }
 
 function updateMessages(data){
-    knex('chatlogs').insert(data).then(()=> {
-        console.info('chat log saved')
-    }).catch(err =>{
-        console.error(err)
-    }).finally(() =>{
-        knex.destroy();
-    });
     let messagesToHtml = ''
     data.forEach(i => {
-        messagesToHtml = messagesToHtml + `<li><b class="text-primary fs-bold">${i.username}: </b><b class="text-warning">${Date()}</b>: <i class="text-success">${i.message}</i></li>`
+        messagesToHtml = messagesToHtml + `<li><b class="text-primary fs-bold">${i.author.username}: </b><b class="text-warning">${Date()}</b>: <i class="text-success">${i.text}</i></li>`
     })
     document.querySelector('#messagesList').innerHTML = messagesToHtml;
 }
 
-
+//format message format 
 
 socket.on('UPDATE_DATA', (data) => {
     messages = data

@@ -1,11 +1,11 @@
 const express = require('express');
 const {Server: HttpServer} = require('http');
-const { default: knex } = require('knex');
 const {Server: IoServer} = require('socket.io');
 const Productos = require('./src/services/productos.services');
+const Cart = require('./src/services/cart.services');
+const ChatLog = require('./src/services/chatlog.services');
+const { default: knex } = require('knex');
 require('dotenv').config();
-
-
 
 const messages = [];
 
@@ -37,23 +37,178 @@ app.get('/ping', (_req, res)=>{
     })
 })
 
+/// /Productos
 
-
+//get
 app.get('/productos', (_req, res)=>{
     const productos = new Productos()
     res.render('./pages/index', {productos: productos.getProductos()})
 })
 
-app.post('/productos' , (req, res)=>{
-    const {name, price, thumbnail} = req.body;
-    const productos = new Productos()
-    productos.saveProductos({name, price, thumbnail})
-    res.redirect('/productos');
-})
-
 app.get('/productos', (_req, res) => {
     res.sendFile('index', {root: __dirname});
 })
+
+
+
+app.get('/api/productos-test', (_req, res)=>{
+    const productos = new Productos()
+    res.status(200).json({
+        productos: productos.generateProductos()
+    })
+})
+
+//post
+app.post('/productos' , (req, res)=>{
+    const {name, price, thumbnail} = req.body;
+    const productos = new Productos()
+    const newID = productos.getProductos().length + 1;
+    const producto = {
+        id: newID,
+        name,
+        price,
+        thumbnail,
+        quantity: 1,
+        time: Date.now(),
+        desc: "Producto agregado al carrito"
+    }
+    productos.saveProductos(producto)
+    res.redirect('/productos');
+})
+
+
+// producto/id
+
+
+app.get('/productos/:id', (req, res)=>{
+    try{
+        const {id} = req.params;
+        const productos = new Productos()
+        const producto = productos.getProductos().find(i => i.id == id)
+        res.status(200).json({
+            name: producto.name,
+            price: producto.price,
+            thumbnail: producto.thumbnail,
+            id: producto.id,
+            quantity: producto.quantity,
+            time: new Date(producto.time).toLocaleString(),
+            desc: producto.desc
+        })
+    }catch(err){
+        res.status(404).json({
+            error: err
+        })
+    }
+})
+
+
+//put
+app.put('/productos/:id', (req, res)=>{
+    try{
+        const {id} = req.params;
+        const {name, price, thumbnail} = req.body;
+        const productos = new Productos()
+        const producto = productos.getProductos().find(i => i.id == id)
+        producto.name = name;
+        producto.price = price;
+        producto.thumbnail = thumbnail;
+        res.status(200).json({
+            name: producto.name,
+            price: producto.price,
+            thumbnail: producto.thumbnail,
+            id: producto.id,
+            quantity: producto.quantity,
+            time: new Date(producto.time).toLocaleString(),
+            desc: producto.desc
+        })
+    }catch(err){
+        res.status(404).json({
+            error: err
+        })
+    }
+})
+
+
+
+
+// delete
+
+app.delete('/productos/:id', (req, res)=>{
+    try{
+        const {id} = req.params;
+        const productos = new Productos()
+        const producto = productos.getProductos().find(i => i.id == id)
+        productos.deleteProductos(id)
+        res.status(200).json({
+            producto
+        })
+    }catch(err){
+        res.status(404).json({
+            error: err
+        })
+    }
+})
+
+//CART
+
+//get
+app.get('/cart/productos', (_req, res)=>{
+    const productos = new Cart()
+    res.status(200).json({
+        productos: productos.getCart()
+    })
+}
+)
+
+//post
+app.post('/cart/productos' , (req, res)=>{
+    const {name, price, thumbnail} = req.body;
+    const productos = new Cart()
+    const newID = productos.getCart().length + 1;
+    const producto = {
+        id: newID,
+        name,
+        price,
+        thumbnail,
+        quantity: 1,
+        time: Date.now(),
+        desc: "Producto agregado al carrito"
+    }
+    productos.saveCart(producto)
+    res.status(200).json({
+        producto
+    })
+})
+
+//delete 
+app.delete('/cart', (_req, res)=>{
+    const productos = new Cart()
+    productos.deleteCart()
+    res.status(200).json({
+        productos: productos.getCart()
+    })
+})
+
+
+app.delete('/cart/productos/:id', (req, res)=>{
+    try{
+        const {id} = req.params;
+        const productos = new Cart()
+        const producto = productos.getCart().find(i => i.id == id)
+        productos.deleteCart(id)
+        res.status(200).json({
+            producto
+        })
+    }catch(err){
+        res.status(404).json({
+            error: err
+        })
+    }
+})
+
+
+//chat
+
 
 const PORT = process.env.PORT || 3000
 
