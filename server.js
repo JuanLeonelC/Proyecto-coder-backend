@@ -118,6 +118,20 @@ app.get('/health', (_req, res) => {
     })
 })
 
+app.get('/api/randoms', (req, res) => {
+    //get random number between 0 and 10000 and send req.query times in an array
+    const min = 0;
+    const max = 10000;
+    const randoms = [];
+    const cant = req.query.cant || 1;
+    for (let i = 0; i < cant ; i++) {
+        randoms.push(Math.floor(Math.random() * (max - min) + min))
+    }
+    res.status(200).json({
+        randoms
+    })
+})
+
 app.get('/ping', (_req, res) => {
     res.status(200).json({
         ping: "PONG"

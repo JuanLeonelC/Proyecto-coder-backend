@@ -10,6 +10,16 @@ router.get("/health", (_req, res) => {
     });
 });
 
+router.get('/info', (_req, res) => {
+    res.status(200).json({
+        directory: process.cwd(),
+        IDdelproceso: process.pid,
+        nodeVersion: process.version,
+        TitulodelProceso: process.title,
+        plataforma: process.platform,
+        MemoryUse: process.memoryUsage()
+    })
+})
 
 router.use('/cookies', cookieRouter)
 
