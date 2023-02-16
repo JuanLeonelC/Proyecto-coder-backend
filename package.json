@@ -21,6 +21,8 @@
   },
   "homepage": "https://github.com/NatanYona/NatanYonaBackend#readme",
   "dependencies": {
+    "compress": "^0.99.0",
+    "compression": "^1.7.4",
     "connect-mongo": "^4.6.0",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.3",
@@ -30,6 +32,7 @@
     "http-status": "^1.6.2",
     "knex": "^2.4.0",
     "lodash": "^4.17.21",
+    "log4js": "^6.7.1",
     "md5": "^2.3.0",
     "moment": "^2.29.4",
     "mongodb": "^4.13.0",

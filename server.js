@@ -16,7 +16,20 @@ const mongooseConect = require('./src/services/Mongo/connect');
 const passport = require('passport');
 const userModel = require('./src/services/Mongo//models/user.model');
 const md5 = require('md5');
+const log4js = require('log4js')
+const compression = require('compression')
 require('dotenv').config();
+
+log4js.configure({
+    appenders: {
+        file: { type: 'file', filename: 'server.log' },
+        console: { type: 'console' }
+    },
+    categories: {
+        default: { appenders: ['console'], level: 'info' },
+        server: { appenders: ['file'], level: 'warn' }
+    }
+});
 
 
 const localStategy = require('passport-local').Strategy;
@@ -24,6 +37,7 @@ const localStategy = require('passport-local').Strategy;
 
 const messages = [];
 const app = express();
+app.use(compression())
 
 const http = new HttpServer(app);
 const io = new IoServer(http);
@@ -281,7 +295,7 @@ app.post('/cart/productos', (req, res) => {
     })
 })
 
-//delete 
+//delete
 app.delete('/cart', (_req, res) => {
     const productos = new Cart()
     productos.deleteCart()
@@ -307,6 +321,13 @@ app.delete('/cart/productos/:id', (req, res) => {
     }
 })
 
+
+const log = log4js.getLogger('server');
+
+app.get('/data', (_req, res) => {
+    log.info("server data port " + PORT  + "process " + process.pid)
+    res.send("server data port " + PORT  + "process " + process.pid)
+})
 
 //chat
 
