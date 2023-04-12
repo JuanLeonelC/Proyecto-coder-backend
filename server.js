@@ -12,7 +12,8 @@ const compression = require('compression')
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
 const uuidv4 = require('uuid').v4
-const emailjs = require('@emailjs/browser')
+const {graphqlHTTP} = require('express-graphql');
+const {buildSchema} = require('graphql');
 require('dotenv').config();
 
 log4js.configure({
@@ -61,6 +62,76 @@ app.use(session({
 }));
 
 app.use(indexRouter);
+
+
+
+const schema = buildSchema(`
+    type Producto {
+        nombre: String
+        precio: Int
+        thumbnail: String
+        id: String
+    }
+    input ProductoInput {
+        nombre: String
+        precio: Int
+        thumbnail: String
+    }
+    type Query {
+        getProducto(id: String): [Producto]
+    }
+    type Mutation {
+        saveProductos(producto: ProductoInput): Producto
+        deleteProducto(id: String): Producto
+    }
+    `)
+
+
+class product {
+    constructor(nombre, precio, thumbnail, id) {
+        this.nombre = nombre;
+        this.precio = precio;
+        this.thumbnail = thumbnail;
+        this.id = id;
+    }
+}
+
+const productMap = {}
+
+function getProducto(id) {
+    if (id) {
+        return productMap[id]
+    } else {
+        return Object.values(productMap)
+    }
+}
+
+
+function saveProductos({ producto }) {
+    const newProducto = new product(producto.nombre, producto.precio, producto.thumbnail, uuidv4())
+    productMap[newProducto.id] = newProducto
+    return newProducto
+}
+
+function deleteProducto({ id }) {
+    const deletedProducto = productMap[id]
+    delete productMap[id]
+    return deletedProducto
+}
+
+app.use('/graphql', graphqlHTTP({
+    schema: schema,
+    rootValue: {
+        getProducto: getProducto,
+        saveProductos: saveProductos,
+        deleteProducto: deleteProducto,
+    },
+    graphiql: true
+})
+)
+
+
+
 
 
 //////end points
